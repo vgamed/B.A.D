@@ -77,7 +77,8 @@ void Hero::onCustomEvent( EventCustom* event )
 {
 }
 
-void Hero::onAnimationEvent( Armature* arm, MovementEventType type, const char* movementID )
+void Hero::onAnimationEvent( Armature* arm, MovementEventType type, 
+							const std::string& movementID )
 {
 	if( type == COMPLETE )
 	{
@@ -263,7 +264,11 @@ void StateHeroAttack::enter( Character* c )
 	{
 		arm->getAnimation()->play( "attack" );
 		//arm->getAnimation()->setFrameEventCallFunc();
-		arm->getAnimation()->setMovementEventCallFunc( c, movementEvent_selector(Hero::onAnimationEvent) );
+		//arm->getAnimation()->setMovementEventCallFunc( c, movementEvent_selector(Hero::onAnimationEvent) );
+		arm->getAnimation()->setMovementEventCallFunc( [=](Armature *armature, MovementEventType movementType, const std::string& movementID)
+														{
+															c->onAnimationEvent( armature, movementType, movementID ); 
+														} );
 	}
 }
 
@@ -285,6 +290,6 @@ void StateHeroAttack::exec( Character* c, float dt )
 void StateHeroAttack::exit( Character* c ) 
 {
 	if( Armature* arm = c->getArmature() )
-		arm->getAnimation()->setMovementEventCallFunc( nullptr, nullptr );
+		arm->getAnimation()->setMovementEventCallFunc( nullptr );
 }
 ////

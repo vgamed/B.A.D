@@ -20,7 +20,7 @@ public:
 
 	void onCustomEvent( cocos2d::EventCustom* event );
 	void onAnimationEvent( cocostudio::Armature* arm, 
-		cocostudio::MovementEventType type, const char* movementID );
+		cocostudio::MovementEventType type, const std::string& movementID );
 
 	bool findTarget( Team* enemies );
 

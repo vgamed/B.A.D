@@ -53,6 +53,8 @@ void Character::init( const CharInfo& info, const CharState& basicState,
 	if( m_pArmature )
 		m_pArmature->retain();
 
+	m_pArmature->setScale( 0.5f );
+
 	m_pTarget = nullptr;
 	m_pListener = nullptr;
 

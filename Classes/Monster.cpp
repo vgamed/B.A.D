@@ -83,7 +83,8 @@ void Monster::onCustomEvent( EventCustom* event )
 	}
 }
 
-void Monster::onAnimationEvent( Armature* arm, MovementEventType type, const char* movementID )
+void Monster::onAnimationEvent( Armature* arm, MovementEventType type, 
+							   const std::string& movementID )
 {
 }
 

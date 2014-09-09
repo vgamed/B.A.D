@@ -1,14 +1,26 @@
 ﻿#include "cocos2d.h"
+#include "cocostudio/CocoStudio.h"
+#include "cocos-ext.h"
+
+#include <cstring>
+#include "StateMachine.h"
+#include "Character.h"
 #include "GameMode.h"
 #include "Team.h"
 #include "DummyGameMode.h"
 #include "AppDelegate.h"
+#include "GameLayer.h"
+#include "PauseLayer.h"
+#include "AimBox.h"
 #include "FightScene.h"
 
 USING_NS_CC;
+using namespace cocostudio;
 
 FightScene::FightScene(void)
 {
+	m_pGameMode = nullptr;
+	m_pPauseLayer = nullptr;
 }
 
 
@@ -21,16 +33,17 @@ FightScene::~FightScene(void)
 Scene* FightScene::createScene()
 {
     auto scene = Scene::create();
-    auto layer = FightScene::create();
+    
+	auto game_layer = FightScene::create();
 
-    scene->addChild( layer, -100, "Fight" );
+	scene->addChild( game_layer, -100, "Fight" );
 
     return scene;
 }
 
 bool FightScene::init()
 {
-    if ( !Layer::init() )
+    if ( !GameLayer::init() )
     {
         return false;
     }
@@ -51,6 +64,10 @@ bool FightScene::init()
     menu->setPosition( Vec2::ZERO );
     this->addChild( menu, 1, 100 ); //tag 100
 
+	// create AimBox
+	//m_aimBox = AimBox::create( Vec2(100.0f,100.0f), true );
+	//this->addChild( m_aimBox, 10, 1010 );
+
 	// init game mode
 	do{
 		m_pGameMode = new DummyGameMode();
@@ -61,6 +78,7 @@ bool FightScene::init()
 	}while(0);
 
 	CC_SAFE_DELETE( m_pGameMode );
+
 	return false;
 }
 
@@ -95,10 +113,38 @@ void FightScene::menuPauseCallback(Ref* pSender)
 	{
 		menu_item->setString( "Pause" );
 		Director::getInstance()->resume();
+		this->getParent()->removeChildByName( "Pause", true );
 	}
 	else
 	{
 		menu_item->setString( "Resume" );
 		Director::getInstance()->pause();
+
+		auto pause_layer = PauseLayer::create();
+		pause_layer->setBoundLayer( this );
+		this->getParent()->addChild( pause_layer, -90, "Pause");
 	}
+}
+
+Character* FightScene::selectNodeByPosition( Point& pos, bool isForPlayer )
+{
+	auto gamemode = dynamic_cast<DummyGameMode*>( m_pGameMode );
+	Team& team = isForPlayer ? gamemode->getPlayerTeam() : gamemode->getEnemyTeam();
+
+	for( int i=0; i<NUM_TEAM_MEMBER; i++ )
+	{
+		Character* c = team.tm.ma[i];
+		if( c == nullptr )
+			continue;
+		
+		Armature* arm = team.tm.ma[i]->getArmature();
+		if( arm == nullptr )
+			continue;
+		
+		Rect rc = arm->getBoundingBox();
+		if( rc.containsPoint( pos ) )
+			return c;
+	}
+
+	return nullptr;
 }

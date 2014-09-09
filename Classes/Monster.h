@@ -18,7 +18,7 @@ public:
 	void update( float dt );
 	void onCustomEvent( cocos2d::EventCustom* event );
 	void onAnimationEvent( cocostudio::Armature* arm, 
-		cocostudio::MovementEventType type, const char* movementID );
+		cocostudio::MovementEventType type, const std::string& movementID );
 
 	friend class StateMonsterGlobal;
 

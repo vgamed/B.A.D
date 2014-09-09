@@ -56,7 +56,7 @@ public:
 	virtual void update( float dt ) = 0;
 	virtual	void onCustomEvent( cocos2d::EventCustom* event ) = 0;
 	virtual void onAnimationEvent( cocostudio::Armature* arm, 
-		cocostudio::MovementEventType type, const char* movementID ) = 0;
+		cocostudio::MovementEventType type, const std::string& movementID ) = 0;
 
 	// getters and setters
 	const CharInfo& getCharInfo(void) { return m_info; }
