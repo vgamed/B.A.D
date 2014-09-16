@@ -12,6 +12,7 @@ public:
 
 	GameLayer(void)
 	{
+		m_phyWorld = nullptr;
 	}
 
 	~GameLayer(void)
@@ -24,6 +25,8 @@ public:
 	}
 
 	virtual Character* selectNodeByPosition( cocos2d::Point& pos, bool isForPlayer ) = 0;
+
+	CC_SYNTHESIZE( cocos2d::PhysicsWorld*, m_phyWorld, PhyWorld );
 };
 
 #endif //__GAME_LAYER_H__

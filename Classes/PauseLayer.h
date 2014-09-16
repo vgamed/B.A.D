@@ -34,7 +34,7 @@ private:
 	bool m_isSelectingTarget;
 
 	AimBox* m_aimBox;
-	TargetBox* m_targetBox;
+	AimBox* m_targetBox;
 };
 
 #endif //__PAUSE_LAYER_H__

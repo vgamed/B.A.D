@@ -12,7 +12,8 @@ public:
 	~Monster(void);
 
 	void init( const CharInfo& info, const CharState& basicState,
-		cocostudio::Armature* arm );
+		cocostudio::Armature* arm = nullptr,
+		cocos2d::PhysicsBody* body = nullptr );
 
 	void deploy( cocos2d::Layer* layer, const cocos2d::Vec2& pos );
 	void update( float dt );

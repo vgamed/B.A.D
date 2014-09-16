@@ -4,6 +4,10 @@
 #include "cocostudio/CocoStudio.h"
 #include "cocos-ext.h"
 
+#if CC_USE_PHYSICS
+#include "physics/chipmunk/CCPhysicsShapeInfo_chipmunk.h"
+#endif
+
 USING_NS_CC;
 USING_NS_CC_EXT;
 using namespace cocostudio;
@@ -44,6 +48,12 @@ void AppDelegate::cleanCocos()
 	ActionManagerEx::destroyInstance();
 	GUIReader::destroyInstance();
 	ObjectFactory::destroyInstance();
+
+#if CC_USE_PHYSICS
+	cpBody* shared = PhysicsShapeInfo::getSharedBody();
+	if( shared )
+		cpBodyFree( shared );
+#endif
 }
 
 void AppDelegate::createScenes()

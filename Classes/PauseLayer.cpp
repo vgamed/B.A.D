@@ -5,7 +5,6 @@
 #include "StateMachine.h"
 #include "Character.h"
 #include "AimBox.h"
-#include "TargetBox.h"
 #include "GameLayer.h"
 #include "PauseLayer.h"
 
@@ -44,12 +43,12 @@ bool PauseLayer::init(void)
 	// create background
 
 	// create TargetBox
-	m_targetBox = TargetBox::create( Vec2(0.0f,0.0f), false );
+	m_targetBox = AimBox::create( Vec2(0.0f,0.0f), false, Color4F(1.0f,0.0f,0.0f,1.0f) );
 	m_targetBox->retain();
 	addChild( m_targetBox, 100 );
 
 	// create AimerBox
-	m_aimBox = AimBox::create( Vec2(0.0f,0.0f), false );
+	m_aimBox = AimBox::create( Vec2(0.0f,0.0f), false, Color4F(0.0f,1.0f,0.0f,1.0f) );
 	m_aimBox->retain();
 	addChild( m_aimBox, 100 );
 
@@ -66,30 +65,40 @@ void PauseLayer::processTouchEnded( Touch* touch, Event* event )
 	if( aimer )
 	{
 		// move aiming box to the characters selected
-		m_aimBox->setBoxPosition( pos );
+		auto rect = aimer->getArmature()->getBoundingBox();
+		m_aimBox->setBoxPosition( Vec2(rect.getMidX(),rect.getMidY()) );
+		m_aimBox->setBoxWidth( rect.getMaxX()-rect.getMinX() );
+		m_aimBox->setBoxHeight( rect.getMaxY()-rect.getMinY() );
 		m_aimBox->showUp( true );
-		if( aimer->getTarget() )
+		if( auto t = aimer->getTarget() )
 		{
 			// show the target box
-			//...
+			auto rect = t->getArmature()->getBoundingBox();
+			m_targetBox->setBoxPosition( Vec2(rect.getMidX(),rect.getMidY()) );
+			m_targetBox->setBoxWidth( rect.getMaxX()-rect.getMinX() );
+			m_targetBox->setBoxHeight( rect.getMaxY()-rect.getMinY() );
+			m_targetBox->showUp( true );
 			// draw curve to the target box
 			//...
 		}
+		else // hide the target box
+			m_targetBox->showUp( false );
 		m_pAimer = aimer;
-		m_isSelectingTarget = true;
 		return;
 	}
 
 	auto target = m_pLayerBound->selectNodeByPosition( pos, false );
-	if( target && m_isSelectingTarget )
+	if( target && m_pAimer )
 	{
 		// move targeting box to the characters selected
-		m_targetBox->setBoxPosition( pos );
+		auto rect = target->getArmature()->getBoundingBox();
+		m_targetBox->setBoxPosition( Vec2(rect.getMidX(),rect.getMidY()) );
+		m_targetBox->setBoxWidth( rect.getMaxX()-rect.getMinX() );
+		m_targetBox->setBoxHeight( rect.getMaxY()-rect.getMinY() );
 		m_targetBox->showUp( true );
 		m_pAimer->setTarget( target );
 		// draw targeting curve
 		//...
-		m_isSelectingTarget = false;
 	}
 
 	//do{

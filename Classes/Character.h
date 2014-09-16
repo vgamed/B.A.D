@@ -35,9 +35,11 @@ struct CharState
 	float mgcAttack; // magical attack power
 	float phyResist; // phyical resistance
 	float mgcResist; // magical resistance
-	float speed;
 	float attackInterval;
 	float attackDistance;
+	float moveSpeed;
+	float rotationY;
+	cocos2d::Vec2 facingTo;
 };
 
 template<class T> class StateMachine;
@@ -45,12 +47,15 @@ template<class T> class StateMachine;
 class Character : public cocos2d::Ref
 {
 public:
+	static const cocos2d::Size PHYSICS_BOX_SIZE;
+
 	Character(void);
 	virtual ~Character(void);
 
 	// interfaces
 	virtual void init( const CharInfo& info, const CharState& basicState,
-		cocostudio::Armature* arm );
+		cocostudio::Armature* arm = nullptr,
+		cocos2d::PhysicsBody* body = nullptr );
 
 	virtual void deploy( cocos2d::Layer* layer, const cocos2d::Vec2& pos ) = 0;
 	virtual void update( float dt ) = 0;
@@ -76,18 +81,19 @@ public:
 	void setTarget( Character * target ) { m_pTarget = target; }
 
 	cocostudio::Armature* getArmature(void) { return m_pArmature; }
-	void setArmature( cocostudio::Armature* arm ) 
-	{ 
-		m_pArmature = arm;
-		if( m_pArmature )
-			m_pArmature->retain(); 
-	}
-
-	void replaceArmature( cocostudio::Armature* arm ) // node=nullptr for emptying the current node
+	void setArmature( cocostudio::Armature* arm, cocos2d::PhysicsBody* body = nullptr ) 
 	{
 		if( m_pArmature )
 			m_pArmature->release(); 
-		setArmature( arm );		
+
+		m_pArmature = arm;
+
+		if( m_pArmature )
+		{
+			m_pArmature->retain(); 
+			if( body )
+				m_pArmature->setPhysicsBody( body );
+		}
 	}
 
 	StateMachine<Character> * getStateMachine(void) { return m_pStateMachine; }
@@ -95,11 +101,15 @@ public:
 	// utilities
 	bool isDead() { return (m_actualState.health <= 0); }
 
+	virtual cocos2d::Vec2 calcMoveTo( void );
+
 protected:
 	CharInfo m_info;
 	CharState m_basicState;
 	CharState m_actualState;
+
 	cocostudio::Armature* m_pArmature;
+	cocos2d::PhysicsBody* m_phyBody;
 
 	Character * m_pTarget;
 	StateMachine<Character>* m_pStateMachine;
@@ -109,7 +119,7 @@ protected:
 
 private:
 	virtual void calcActualState(void) = 0;
-
+	virtual void doDamage( float phy_atk, float mgc_atk ) = 0;
 };
 
 #endif //GAME_CHARACTER_H__

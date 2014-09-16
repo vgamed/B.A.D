@@ -16,10 +16,12 @@ AimBox::~AimBox(void)
 {
 }
 
-AimBox* AimBox::create( Vec2& pos, bool show )
+AimBox* AimBox::create( Vec2& pos, bool show, 
+					   cocos2d::Color4F& color,
+					   float width,	float height )
 {
 	AimBox* box = new AimBox();
-	if( box && box->init( pos, show ) )
+	if( box && box->init( pos, show, width, height, color ) )
 		box->autorelease();
 	else
 		CC_SAFE_DELETE( box );
@@ -27,12 +29,17 @@ AimBox* AimBox::create( Vec2& pos, bool show )
 	return box;
 }
 
-bool AimBox::init( Vec2& pos, bool show )
+bool AimBox::init( cocos2d::Vec2& pos, bool show, 
+	float width, float height, cocos2d::Color4F& color )
 {
 	if( !DrawNode::init() )
 		return false;
 
 	setBoxPosition( pos );
+	setBoxWidth( width );
+	setBoxHeight( height );
+	setBoxColor( color );
+
 	showUp( show );
 
 	return true;
@@ -41,9 +48,21 @@ bool AimBox::init( Vec2& pos, bool show )
 void AimBox::showUp( bool show )
 {
 	if( show )
-		this->drawDot( m_pos, 40.0f, Color4F(1.0f,1.0f,0.0f,0.8f) );
+		this->drawBox( m_pos, m_color );
 	else
-		this->drawDot( Vec2(-100.0f,-100.0f), 40.0f, Color4F(0.0f,0.0f,0.0f,0.0f) );
+		this->drawBox( Vec2(-100.0f,-100.0f), Color4F(0.0f,0.0f,0.0f,0.0f) );
+}
+
+void AimBox::drawBox( Vec2& pos, Color4F& color )
+{
+	Vec2 verts[4];
+	verts[0] = Vec2( pos.x-m_width/2, pos.y-m_height/2 );
+	verts[1] = Vec2( pos.x-m_width/2, pos.y+m_height/2 );
+	verts[2] = Vec2( pos.x+m_width/2, pos.y+m_height/2 );
+	verts[3] = Vec2( pos.x+m_width/2, pos.y-m_height/2 );
+
+	this->clear();
+	this->drawPolygon( verts, 4, Color4F(0.0f,0.0f,0.0f,0.0f), 2.0f, color );
 }
 
 //void AimBox::draw( Renderer* renderer, const Mat4& transform, bool transformUpdated )

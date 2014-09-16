@@ -109,26 +109,34 @@ bool DummyGameMode::initGame( Layer * layer )
 		state.mgcResist = 1.0f;
 		state.energyRecover = 10.0f;
 		state.healthRecover = 50.0f;
-		state.speed = 300.0f;
 		state.attackInterval = 1.5f;
-		state.attackDistance = 10.0f;
+		state.attackDistance = 50.0f;
+		state.moveSpeed = 300.0f;
+		state.facingTo = Vec2( 1.0f, 0.0f );
+
 		info.id = 102;
+		state.rotationY = 180.0f;
 		arm = Armature::create("monster");
 		CC_BREAK_IF( !arm );
-		arm->setRotationSkewY( 180.0f );
 		m_teamPlayer.tm.m.bm = new Hero();
 		m_teamPlayer.tm.m.bm->init(info, state, arm);
+
 		info.id = 103;
+		state.rotationY = 0.0f;
 		arm = Armature::create("girl");
 		CC_BREAK_IF( !arm );
 		m_teamPlayer.tm.m.fm = new Hero();
 		m_teamPlayer.tm.m.fm->init(info, state, arm);
+
 		info.id = 104;
+		state.rotationY = 0.0f;
 		arm = Armature::create("girl");
 		CC_BREAK_IF( !arm );
 		m_teamPlayer.tm.m.mu = new Hero();
 		m_teamPlayer.tm.m.mu->init(info, state, arm);
+
 		info.id = 105;
+		state.rotationY = 0.0f;
 		arm = Armature::create("girl");
 		CC_BREAK_IF( !arm );
 		m_teamPlayer.tm.m.mb = new Hero();
@@ -146,26 +154,34 @@ bool DummyGameMode::initGame( Layer * layer )
 		state.mgcResist = 1.0f;
 		state.energyRecover = 0.0f;
 		state.healthRecover = 0.0f;
-		state.speed = 125.0f;
 		state.attackInterval = 2.0f;
-		state.attackDistance = 10.0f;
+		state.attackDistance = 50.0f;
+		state.moveSpeed = 125.0f;
+		state.facingTo = Vec2( -1.0f, 0.0f );
+
 		info.id = 202;
+		state.rotationY = 180.0f;
 		arm = Armature::create("girl");
 		CC_BREAK_IF( !arm );
-		arm->setRotationSkewY( 180.0f );
 		m_teamEnemy.tm.m.bm = new Monster();
 		m_teamEnemy.tm.m.bm->init(info, state, arm);
+
 		info.id = 203;
+		state.rotationY = 0.0f;
 		arm = Armature::create("monster");
 		CC_BREAK_IF( !arm );
 		m_teamEnemy.tm.m.fm = new Monster();
 		m_teamEnemy.tm.m.fm->init(info, state, arm);
+
 		info.id = 204;
+		state.rotationY = 0.0f;
 		arm = Armature::create("monster");
 		CC_BREAK_IF( !arm );
 		m_teamEnemy.tm.m.fu = new Monster();
 		m_teamEnemy.tm.m.fu->init(info, state, arm);
+
 		info.id = 205;
+		state.rotationY = 0.0f;
 		arm = Armature::create("monster");
 		CC_BREAK_IF( !arm );
 		m_teamEnemy.tm.m.fb= new Monster();

@@ -31,8 +31,6 @@ public:
     
     CREATE_FUNC(FightScene);
 	
-	CC_SYNTHESIZE( AimBox*, m_aimBox, AimBox );
-
 private:
 	GameMode* m_pGameMode;
 	cocos2d::Layer* m_pPauseLayer;

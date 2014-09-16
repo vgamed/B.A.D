@@ -22,9 +22,13 @@ Monster::~Monster(void)
 }
 
 void Monster::init( const CharInfo& info, const CharState& basicState,
-	cocostudio::Armature* arm )
+	Armature* arm, PhysicsBody* body )
 {
-	Character::init( info, basicState, arm );
+#if CC_USE_PHYSICS
+	Character::init( info, basicState, arm, PhysicsBody::createEdgeBox(PHYSICS_BOX_SIZE) );
+#elif
+	Character::init( info, basicState, arm, body );
+#endif
 
 	STATE_GLOBAL	= new StateMonsterGlobal();
 	STATE_IDLE		= new StateMonsterIdle();
@@ -47,11 +51,14 @@ void Monster::deploy( cocos2d::Layer* layer, const cocos2d::Vec2& pos )
 	//deploy position
 	if( layer && m_pArmature )
 	{
+		m_pArmature->setRotationSkewY( m_actualState.rotationY );
 		m_pArmature->setPosition( pos );
 		m_pArmature->setAnchorPoint( Vec2(0.5f, 0.0f) );
 
 		if( !layer->getChildByTag( m_info.id ) )
+		{
 			layer->addChild( m_pArmature, m_info.zorder, m_info.id );
+		}
 	}
 }
 

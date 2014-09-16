@@ -32,10 +32,33 @@ FightScene::~FightScene(void)
 
 Scene* FightScene::createScene()
 {
-    auto scene = Scene::create();
+#if CC_USE_PHYSICS
+    auto scene = Scene::createWithPhysics();
+	scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
+#elif
+	auto scene = Scene::create();
+#endif
     
+	// add physics boundary
+	Size visibleSize = Director::getInstance()->getVisibleSize();
+	auto edgeNode = Node::create();
+
+#if CC_USE_PHYSICS
+	auto boundary = PhysicsBody::createEdgeBox( visibleSize, PHYSICSBODY_MATERIAL_DEFAULT, 3 );
+	edgeNode->setPhysicsBody( boundary );
+#endif
+
+	edgeNode->setPosition( Point(visibleSize.width/2,visibleSize.height/2) );
+	scene->addChild( edgeNode, -100, "PhyBoundary" );
+
+	// create the layer
 	auto game_layer = FightScene::create();
 
+#if CC_USE_PHYSICS
+	game_layer->setPhyWorld( scene->getPhysicsWorld() );
+#endif
+
+	// add FightScene layer
 	scene->addChild( game_layer, -100, "Fight" );
 
     return scene;
@@ -64,10 +87,6 @@ bool FightScene::init()
     menu->setPosition( Vec2::ZERO );
     this->addChild( menu, 1, 100 ); //tag 100
 
-	// create AimBox
-	//m_aimBox = AimBox::create( Vec2(100.0f,100.0f), true );
-	//this->addChild( m_aimBox, 10, 1010 );
-
 	// init game mode
 	do{
 		m_pGameMode = new DummyGameMode();
@@ -92,14 +111,21 @@ void FightScene::onEnterTransitionDidFinish(void)
 	Node::onEnterTransitionDidFinish();
 
 	if( !m_pGameMode->isGameStarted() )
+	{
 		m_pGameMode->startGame();
+	}
 
-	scheduleUpdate();
+	getPhyWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
+
+	this->getScene()->scheduleUpdate();
+	this->scheduleUpdate();
 }
 
 void FightScene::menuQuitGameCallback(Ref* pSender)
 {
 	m_pGameMode->endGame();
+
+	getPhyWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_NONE);
 
 	//Director::getInstance()->popScene();
 	Director::getInstance()->replaceScene( 

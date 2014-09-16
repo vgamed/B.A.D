@@ -28,9 +28,13 @@ Hero::~Hero(void)
 }
 
 void Hero::init( const CharInfo& info, const CharState& basicState,
-	Armature* arm )
+	Armature* arm, PhysicsBody* body )
 {
-	Character::init( info, basicState, arm );
+#if CC_USE_PHYSICS
+	Character::init( info, basicState, arm, PhysicsBody::createEdgeBox(PHYSICS_BOX_SIZE) );
+#elif
+	Character::init( info, basicState, arm, body );
+#endif
 
 	STATE_GLOBAL	= new StateHeroGlobal();
 	STATE_IDLE		= new StateHeroIdle();
@@ -58,10 +62,13 @@ void Hero::deploy( cocos2d::Layer* layer, const cocos2d::Vec2& pos )
 	if( layer && m_pArmature )
 	{
 		//m_pArmature->setPosition( pos );
+		m_pArmature->setRotationSkewY( m_actualState.rotationY );
 		m_pArmature->setAnchorPoint( Vec2(0.5f, 0.0f) );
 
 		if( !layer->getChildByTag( m_info.id ) )
+		{
 			layer->addChild( m_pArmature, m_info.zorder, m_info.id );
+		}
 
 		auto action = Place::create( pos );
 		m_pArmature->runAction( action );
@@ -96,7 +103,7 @@ void Hero::doDamage( float phy_atk, float mgc_atk )
 {
 }
 
-bool Hero::findTarget( Team* enemies )
+bool Hero::findDefaultTarget( Team* enemies )
 {
 	if( enemies == nullptr )
 		return false;
@@ -173,7 +180,7 @@ void StateHeroIdle::enter( Character* c )
 void StateHeroIdle::exec( Character* c, float dt )
 {
 	Hero* hero = dynamic_cast<Hero*>(c);
-	if( hero && (hero->getTarget()==nullptr) && hero->findTarget( m_teamEnemy ) )
+	if( hero && (hero->getTarget()||hero->findDefaultTarget( m_teamEnemy )) )
 		hero->getStateMachine()->changeState( hero->STATE_MOVE );
 }
 
@@ -201,16 +208,27 @@ void StateHeroMove::exec( Character* c, float dt )
 
 	auto arm = c->getArmature();
 	auto arm_t = c->getTarget()->getArmature();
+	auto state = c->getActualCharState();
 
 	// calculate the position moves to
-	Vec2 move_to;
-	move_to.y = arm_t->getPositionY();
-	move_to.x = arm_t->getBoundingBox().getMinX();
+	Vec2 move_to = c->calcMoveTo();
 	auto cur = arm->getPosition();
 
-	// detect if the target is reached
-	float dist = cur.getDistance( move_to );
-	if( dist < c->getActualCharState().attackDistance )
+	// decide if the character needs to turn around
+	Vec2 mov_dir = move_to - cur;
+	auto dot = mov_dir.dot( state.facingTo );
+	if( dot < 0 )
+	{
+		float angle = arm->getRotationSkewY() ? 0.0f : 180.0f;
+		arm->setRotationSkewY( angle );
+
+		state.facingTo.x = -state.facingTo.x;
+		c->setActualCharState( state );
+	}
+
+	// detect if the target can be reached
+	float dist =cur.getDistance( move_to );
+	if( dist < state.attackDistance )
 	{
 		Hero* hero = dynamic_cast<Hero*>(c);
 		if( hero )
@@ -223,7 +241,7 @@ void StateHeroMove::exec( Character* c, float dt )
 	// calculate the move increase of this update
 	Vec2 inc = move_to - cur;
 	inc.normalize();
-	inc *= c->getActualCharState().speed * dt;
+	inc *= state.moveSpeed * dt;
 	arm->setPosition( cur+inc );
 
 	//// run MoveTo Action
@@ -274,15 +292,34 @@ void StateHeroAttack::enter( Character* c )
 
 void StateHeroAttack::exec( Character* c, float dt ) 
 {
-	m_timeToAttack += dt;
-	if( m_timeToAttack > c->getActualCharState().attackInterval )
+	auto arm = c->getArmature();
+	auto arm_t = c->getTarget()->getArmature();
+
+	// calculate the distance to the target
+	Vec2 move_to = c->calcMoveTo();
+	auto cur = arm->getPosition();
+	float dist = cur.getDistance( move_to );
+
+	// detect if the target is out of reach
+	if( dist > c->getActualCharState().attackDistance )
 	{
-		Armature* arm = c->getArmature();
-		if( arm && !arm->getAnimation()->isPlaying() )
+		Hero* hero = dynamic_cast<Hero*>(c);
+		if( hero && hero->getTarget() )
+			hero->getStateMachine()->changeState( hero->STATE_MOVE );
+	}
+	else
+	{
+		// play the attack animation based on the attacking interval
+		m_timeToAttack += dt;
+		if( m_timeToAttack > c->getActualCharState().attackInterval )
 		{
-			arm->getAnimation()->play( "attack" );
+			Armature* arm = c->getArmature();
+			if( arm && !arm->getAnimation()->isPlaying() )
+			{
+				arm->getAnimation()->play( "attack" );
 			
-			m_timeToAttack = 0.0f;
+				m_timeToAttack = 0.0f;
+			}
 		}
 	}
 }

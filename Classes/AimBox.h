@@ -8,17 +8,26 @@ public:
 	AimBox(void);
 	~AimBox(void);
 
-	static AimBox* create( cocos2d::Vec2& pos, bool show );
-	bool init( cocos2d::Vec2& pos, bool show );
+	static AimBox* create( cocos2d::Vec2& pos, bool show, 
+		cocos2d::Color4F& color = cocos2d::Color4F(1.0f,1.0f,1.0f,0.6f),
+		float width = 80.0f,
+		float height = 80.0f );
 
-	void setBoxPosition( cocos2d::Vec2& pos ) { m_pos = pos; }
-	cocos2d::Vec2& getBoxPosition( void ) { return m_pos; }
+	bool init( cocos2d::Vec2& pos, bool show, 
+		float width, float height, cocos2d::Color4F& color );
 
 	void showUp( bool show );
 	bool isShownUp( void ) { return m_showUp; }
 
+	CC_SYNTHESIZE( float, m_width, BoxWidth );
+	CC_SYNTHESIZE( float, m_height, BoxHeight );
+
+	CC_SYNTHESIZE_PASS_BY_REF( cocos2d::Vec2, m_pos, BoxPosition );
+	CC_SYNTHESIZE_PASS_BY_REF( cocos2d::Color4F, m_color, BoxColor );
+
 private:
-	cocos2d::Vec2 m_pos;
+	void drawBox( cocos2d::Vec2& pos, cocos2d::Color4F& color );
+	
 	bool m_showUp;
 };
 
