@@ -9,7 +9,9 @@
 USING_NS_CC;
 using namespace cocostudio;
 
-const Size Character::PHYSICS_BOX_SIZE = Size(60.0f, 120.0f);
+const Size Character::PHYSICS_BOX_SIZE = Size(80.0f, 50.0f);
+const float Character::SCALE_X = 0.5f;
+const float Character::SCALE_Y = 0.5f;
 
 Character::Character(void)
 {
@@ -27,7 +29,6 @@ Character::Character(void)
 	m_pArmature = nullptr;
 	m_phyBody = nullptr;
 	m_pTarget = nullptr;
-	m_pListener = nullptr;
 }
 
 Character::~Character(void)
@@ -49,28 +50,41 @@ void Character::init( const CharInfo& info, const CharState& basicState,
 					 Armature* arm, PhysicsBody* body )
 {
 	m_info = info;
-	setBasicCharState( basicState );
+	m_basicState = basicState;
 	m_pArmature = arm;
+	if( m_pArmature )
+		m_pArmature->retain();
 
 #if CC_USE_PHYSICS
+	m_phyBody = body;
 	if( body )
+	{
+		body->setGravityEnable( false );
+		body->setPositionOffset( Vec2(0.0f,PHYSICS_BOX_SIZE.height*SCALE_X/2) );
 		m_pArmature->setPhysicsBody( body );
-	//m_phyBody = body;
+	}
 #endif
 
 	m_pStateMachine = new StateMachine<Character>(this);
 
-	if( m_pArmature )
-	{
-		m_pArmature->retain();
-		m_pArmature->setScale( 0.5f );
-	}
-
-	m_pTarget = nullptr;
-	m_pListener = nullptr;
-
 	Director::getInstance()->getEventDispatcher()->addCustomEventListener( "DummyGameEvent", 
 		[&](EventCustom* event){ this->onCustomEvent(event); } );
+
+	reset();
+}
+
+void Character::reset( void )
+{
+	// restore actualState to basicState
+	setBasicCharState( m_basicState );
+
+	// restore the X axis flipping by setting scaleX
+	m_pArmature->setScaleX( m_actualState.facingTo.x * m_actualState.front.x * SCALE_X );
+	m_pArmature->setScaleY( SCALE_Y );
+	m_pArmature->setAnchorPoint( Vec2(0.5f, 0.0f) );
+
+	// clear current target
+	m_pTarget = nullptr;
 }
 
 Vec2 Character::calcMoveTo( void )

@@ -95,10 +95,9 @@ bool DummyGameMode::initGame( Layer * layer )
 	CharInfo info;
 	CharState state;
 	Armature* arm;
+	char str[10] = {'\0'};
 
 	do{
-		info.zorder = 2;
-		info.name = "Hero";
 		info.level = 1;
 		info.type = COMBAT_MELEE;
 		state.health = state.maxHealth = 1000.0f;
@@ -115,35 +114,37 @@ bool DummyGameMode::initGame( Layer * layer )
 		state.facingTo = Vec2( 1.0f, 0.0f );
 
 		info.id = 102;
-		state.rotationY = 180.0f;
+		info.name = "Hero" + _itoa_s(info.id, str, 10);
+		state.front = Vec2( -1.0f, 0.0f );
 		arm = Armature::create("monster");
 		CC_BREAK_IF( !arm );
 		m_teamPlayer.tm.m.bm = new Hero();
 		m_teamPlayer.tm.m.bm->init(info, state, arm);
 
 		info.id = 103;
-		state.rotationY = 0.0f;
+		info.name = "Hero" + _itoa_s(info.id, str, 10);
+		state.front = Vec2( 1.0f, 0.0f );
 		arm = Armature::create("girl");
 		CC_BREAK_IF( !arm );
 		m_teamPlayer.tm.m.fm = new Hero();
 		m_teamPlayer.tm.m.fm->init(info, state, arm);
 
 		info.id = 104;
-		state.rotationY = 0.0f;
+		info.name = "Hero" + _itoa_s(info.id, str, 10);
+		state.front = Vec2( 1.0f, 0.0f );
 		arm = Armature::create("girl");
 		CC_BREAK_IF( !arm );
 		m_teamPlayer.tm.m.mu = new Hero();
 		m_teamPlayer.tm.m.mu->init(info, state, arm);
 
 		info.id = 105;
-		state.rotationY = 0.0f;
+		info.name = "Hero" + _itoa_s(info.id, str, 10);
+		state.front = Vec2( 1.0f, 0.0f );
 		arm = Armature::create("girl");
 		CC_BREAK_IF( !arm );
 		m_teamPlayer.tm.m.mb = new Hero();
 		m_teamPlayer.tm.m.mb->init(info, state, arm);
 
-		info.zorder = 2;
-		info.name = "Monster";
 		info.level = 1;
 		info.type = COMBAT_MELEE;
 		state.health = state.maxHealth = 2000.0f;
@@ -160,28 +161,32 @@ bool DummyGameMode::initGame( Layer * layer )
 		state.facingTo = Vec2( -1.0f, 0.0f );
 
 		info.id = 202;
-		state.rotationY = 180.0f;
+		info.name = "Monster" + _itoa_s(info.id, str, 10);
+		state.front = Vec2( 1.0f, 0.0f );
 		arm = Armature::create("girl");
 		CC_BREAK_IF( !arm );
 		m_teamEnemy.tm.m.bm = new Monster();
 		m_teamEnemy.tm.m.bm->init(info, state, arm);
 
 		info.id = 203;
-		state.rotationY = 0.0f;
+		info.name = "Monster" + _itoa_s(info.id, str, 10);
+		state.front = Vec2( -1.0f, 0.0f );
 		arm = Armature::create("monster");
 		CC_BREAK_IF( !arm );
 		m_teamEnemy.tm.m.fm = new Monster();
 		m_teamEnemy.tm.m.fm->init(info, state, arm);
 
 		info.id = 204;
-		state.rotationY = 0.0f;
+		info.name = "Monster" + _itoa_s(info.id, str, 10);
+		state.front = Vec2( -1.0f, 0.0f );
 		arm = Armature::create("monster");
 		CC_BREAK_IF( !arm );
 		m_teamEnemy.tm.m.fu = new Monster();
 		m_teamEnemy.tm.m.fu->init(info, state, arm);
 
 		info.id = 205;
-		state.rotationY = 0.0f;
+		info.name = "Monster" + _itoa_s(info.id, str, 10);
+		state.front = Vec2( -1.0f, 0.0f );
 		arm = Armature::create("monster");
 		CC_BREAK_IF( !arm );
 		m_teamEnemy.tm.m.fb= new Monster();
@@ -236,4 +241,10 @@ void DummyGameMode::resetGame(void)
 	m_layer = nullptr;
 	m_teamEnemy.clear();
 	m_teamPlayer.clear();
+}
+
+int DummyGameMode::calcZOrder( float y )
+{
+	float rate = (BF_RT_TOP.y - y) / (BF_RT_TOP.y - BF_LT_BTM.y);
+	return (int)(rate*100);
 }

@@ -4,6 +4,10 @@
 
 #include "StateMachine.h"
 #include "Character.h"
+#include "Team.h"
+#include "GameMode.h"
+#include "DummyGameMode.h"
+#include "FightScene.h"
 #include "Monster.h"
 #include "EventDummyGame.h"
 
@@ -25,7 +29,7 @@ void Monster::init( const CharInfo& info, const CharState& basicState,
 	Armature* arm, PhysicsBody* body )
 {
 #if CC_USE_PHYSICS
-	Character::init( info, basicState, arm, PhysicsBody::createEdgeBox(PHYSICS_BOX_SIZE) );
+	Character::init( info, basicState, arm, PhysicsBody::createBox(PHYSICS_BOX_SIZE) );
 #elif
 	Character::init( info, basicState, arm, body );
 #endif
@@ -41,8 +45,7 @@ void Monster::init( const CharInfo& info, const CharState& basicState,
 
 void Monster::deploy( cocos2d::Layer* layer, const cocos2d::Vec2& pos )
 {
-	//restore actual state
-	setBasicCharState( m_basicState );
+	reset();
 
 	//reset state machine
 	m_pStateMachine->setGlobalState( STATE_GLOBAL );
@@ -51,13 +54,17 @@ void Monster::deploy( cocos2d::Layer* layer, const cocos2d::Vec2& pos )
 	//deploy position
 	if( layer && m_pArmature )
 	{
-		m_pArmature->setRotationSkewY( m_actualState.rotationY );
-		m_pArmature->setPosition( pos );
-		m_pArmature->setAnchorPoint( Vec2(0.5f, 0.0f) );
-
 		if( !layer->getChildByTag( m_info.id ) )
 		{
-			layer->addChild( m_pArmature, m_info.zorder, m_info.id );
+			layer->addChild( m_pArmature, 0, m_info.id );
+		}
+
+		m_pArmature->setPosition( pos );
+		FightScene* fight = dynamic_cast<FightScene*>( getArmature()->getParent() );
+		if( fight ) 
+		{
+			DummyGameMode* mode = dynamic_cast<DummyGameMode*>(fight->getGameMode());
+			m_pArmature->setLocalZOrder( mode->calcZOrder(m_pArmature->getPositionY()) );
 		}
 	}
 }
@@ -65,6 +72,14 @@ void Monster::deploy( cocos2d::Layer* layer, const cocos2d::Vec2& pos )
 void Monster::update( float dt )
 {
 	m_pStateMachine->update( dt );
+
+	// update z orders of all characters
+	FightScene* fight = dynamic_cast<FightScene*>( getArmature()->getParent() );
+	if( fight ) 
+	{
+		DummyGameMode* mode = dynamic_cast<DummyGameMode*>(fight->getGameMode());
+		m_pArmature->setLocalZOrder( mode->calcZOrder(m_pArmature->getPositionY()) );
+	}
 }
 
 void Monster::onCustomEvent( EventCustom* event )

@@ -13,7 +13,6 @@ enum CombatType
 struct CharInfo
 {
 	long id;
-	int zorder;
 	std::string name;
 	std::string desc; // brief description
 	CombatType type;
@@ -38,7 +37,7 @@ struct CharState
 	float attackInterval;
 	float attackDistance;
 	float moveSpeed;
-	float rotationY;
+	cocos2d::Vec2 front;
 	cocos2d::Vec2 facingTo;
 };
 
@@ -48,6 +47,8 @@ class Character : public cocos2d::Ref
 {
 public:
 	static const cocos2d::Size PHYSICS_BOX_SIZE;
+	static const float SCALE_X;
+	static const float SCALE_Y;
 
 	Character(void);
 	virtual ~Character(void);
@@ -100,6 +101,7 @@ public:
 	
 	// utilities
 	bool isDead() { return (m_actualState.health <= 0); }
+	void reset( void );
 
 	virtual cocos2d::Vec2 calcMoveTo( void );
 
@@ -114,8 +116,6 @@ protected:
 	Character * m_pTarget;
 	StateMachine<Character>* m_pStateMachine;
 	std::vector<State<Character>*> m_vecStates;
-
-	cocos2d::EventListenerCustom* m_pListener;
 
 private:
 	virtual void calcActualState(void) = 0;

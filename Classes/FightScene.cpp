@@ -39,24 +39,24 @@ Scene* FightScene::createScene()
 	auto scene = Scene::create();
 #endif
     
-	// add physics boundary
-	Size visibleSize = Director::getInstance()->getVisibleSize();
-	auto edgeNode = Node::create();
-
-#if CC_USE_PHYSICS
-	auto boundary = PhysicsBody::createEdgeBox( visibleSize, PHYSICSBODY_MATERIAL_DEFAULT, 3 );
-	edgeNode->setPhysicsBody( boundary );
-#endif
-
-	edgeNode->setPosition( Point(visibleSize.width/2,visibleSize.height/2) );
-	scene->addChild( edgeNode, -100, "PhyBoundary" );
-
 	// create the layer
 	auto game_layer = FightScene::create();
 
 #if CC_USE_PHYSICS
+	// save the physics world
 	game_layer->setPhyWorld( scene->getPhysicsWorld() );
+	//// add physics boundary
+	//Size battleFieldSize = Size( DummyGameMode::BF_RT_TOP.x - DummyGameMode::BF_LT_BTM.x,
+	//							DummyGameMode::BF_RT_TOP.y - DummyGameMode::BF_LT_BTM.y );
+	//Vec2 bfCenter = Vec2( DummyGameMode::BF_LT_BTM.x + battleFieldSize.width/2,
+	//						DummyGameMode::BF_LT_BTM.y + battleFieldSize.height/2 );
+	//auto edgeNode = Node::create();
+	//auto boundary = PhysicsBody::createEdgeBox( battleFieldSize, PHYSICSBODY_MATERIAL_DEFAULT, 3 );
+	//edgeNode->setPhysicsBody( boundary );
+	//edgeNode->setPosition( bfCenter );
+	//scene->addChild( edgeNode, -100, "PhyBoundary" );
 #endif
+
 
 	// add FightScene layer
 	scene->addChild( game_layer, -100, "Fight" );

@@ -31,7 +31,7 @@ void Hero::init( const CharInfo& info, const CharState& basicState,
 	Armature* arm, PhysicsBody* body )
 {
 #if CC_USE_PHYSICS
-	Character::init( info, basicState, arm, PhysicsBody::createEdgeBox(PHYSICS_BOX_SIZE) );
+	Character::init( info, basicState, arm, PhysicsBody::createBox(PHYSICS_BOX_SIZE) );
 #elif
 	Character::init( info, basicState, arm, body );
 #endif
@@ -49,11 +49,8 @@ void Hero::init( const CharInfo& info, const CharState& basicState,
 
 void Hero::deploy( cocos2d::Layer* layer, const cocos2d::Vec2& pos )
 {
-	//restore actual state
-	setBasicCharState( m_basicState );
+	reset();
 
-	//clear the target
-	setTarget( nullptr );
 	//reset state machine
 	m_pStateMachine->setGlobalState( STATE_GLOBAL );
 	m_pStateMachine->setCurrentState( STATE_IDLE );
@@ -61,23 +58,31 @@ void Hero::deploy( cocos2d::Layer* layer, const cocos2d::Vec2& pos )
 	//deploy position
 	if( layer && m_pArmature )
 	{
-		//m_pArmature->setPosition( pos );
-		m_pArmature->setRotationSkewY( m_actualState.rotationY );
-		m_pArmature->setAnchorPoint( Vec2(0.5f, 0.0f) );
-
 		if( !layer->getChildByTag( m_info.id ) )
 		{
-			layer->addChild( m_pArmature, m_info.zorder, m_info.id );
+			layer->addChild( m_pArmature, 0, m_info.id );
 		}
-
-		auto action = Place::create( pos );
-		m_pArmature->runAction( action );
+		m_pArmature->setPosition( pos );
+		FightScene* fight = dynamic_cast<FightScene*>( getArmature()->getParent() );
+		if( fight ) 
+		{
+			DummyGameMode* mode = dynamic_cast<DummyGameMode*>(fight->getGameMode());
+			m_pArmature->setLocalZOrder( mode->calcZOrder(m_pArmature->getPositionY()) );
+		}
 	}
 }
 
 void Hero::update( float dt )
 {
 	m_pStateMachine->update( dt );
+
+	// update z orders of all characters
+	FightScene* fight = dynamic_cast<FightScene*>( getArmature()->getParent() );
+	if( m_pArmature && fight ) 
+	{
+		DummyGameMode* mode = dynamic_cast<DummyGameMode*>(fight->getGameMode());
+		m_pArmature->setLocalZOrder( mode->calcZOrder(m_pArmature->getPositionY()) );
+	}
 }
 
 void Hero::onCustomEvent( EventCustom* event )
@@ -219,11 +224,11 @@ void StateHeroMove::exec( Character* c, float dt )
 	auto dot = mov_dir.dot( state.facingTo );
 	if( dot < 0 )
 	{
-		float angle = arm->getRotationSkewY() ? 0.0f : 180.0f;
-		arm->setRotationSkewY( angle );
-
+		//float angle = arm->getRotationSkewY() ? 0.0f : 180.0f;
+		//arm->setRotationSkewY( angle );
 		state.facingTo.x = -state.facingTo.x;
 		c->setActualCharState( state );
+		arm->setScaleX( state.facingTo.x * state.front.x * 0.5f );
 	}
 
 	// detect if the target can be reached

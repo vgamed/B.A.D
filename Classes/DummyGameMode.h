@@ -8,23 +8,6 @@ class DummyGameMode :
 	public GameMode
 {
 public:
-	DummyGameMode(void);
-	~DummyGameMode(void);
-
-	bool initGame(cocos2d::Layer * layer);
-	bool startGame(void);
-	void updateGame(float dt);
-	void endGame(void);
-	void resetGame(void);
-
-	Team& getPlayerTeam(void) { return m_teamPlayer; }
-	Team& getEnemyTeam(void) { return m_teamEnemy; }
-
-private:
-	cocos2d::Layer* m_layer;
-	Team m_teamPlayer;
-	Team m_teamEnemy;
-
 	// offset of battle field from design resolution
 	static const cocos2d::Size BFLD_OFFSET;
 	static const float BFLD_OFF_U;
@@ -58,6 +41,26 @@ private:
 	static const cocos2d::Vec2 ENEMY_B_U;
 	static const cocos2d::Vec2 ENEMY_B_M;
 	static const cocos2d::Vec2 ENEMY_B_B;
+
+	DummyGameMode(void);
+	~DummyGameMode(void);
+
+	bool initGame(cocos2d::Layer * layer);
+	bool startGame(void);
+	void updateGame(float dt);
+	void endGame(void);
+	void resetGame(void);
+
+	Team& getPlayerTeam(void) { return m_teamPlayer; }
+	Team& getEnemyTeam(void) { return m_teamEnemy; }
+
+	int calcZOrder( float y );
+
+private:
+	cocos2d::Layer* m_layer;
+	Team m_teamPlayer;
+	Team m_teamEnemy;
+
 };
 
 #endif //__DUMMY_GAME_MODE_H__

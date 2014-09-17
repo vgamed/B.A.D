@@ -56,10 +56,10 @@ void AimBox::showUp( bool show )
 void AimBox::drawBox( Vec2& pos, Color4F& color )
 {
 	Vec2 verts[4];
-	verts[0] = Vec2( pos.x-m_width/2, pos.y-m_height/2 );
-	verts[1] = Vec2( pos.x-m_width/2, pos.y+m_height/2 );
-	verts[2] = Vec2( pos.x+m_width/2, pos.y+m_height/2 );
-	verts[3] = Vec2( pos.x+m_width/2, pos.y-m_height/2 );
+	verts[0] = Vec2( pos.x-m_width/2, pos.y );
+	verts[1] = Vec2( pos.x-m_width/2, pos.y+m_height );
+	verts[2] = Vec2( pos.x+m_width/2, pos.y+m_height );
+	verts[3] = Vec2( pos.x+m_width/2, pos.y );
 
 	this->clear();
 	this->drawPolygon( verts, 4, Color4F(0.0f,0.0f,0.0f,0.0f), 2.0f, color );

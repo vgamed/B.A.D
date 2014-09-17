@@ -65,18 +65,44 @@ void PauseLayer::processTouchEnded( Touch* touch, Event* event )
 	if( aimer )
 	{
 		// move aiming box to the characters selected
+#if CC_USE_PHYSICS
+		PhysicsBody* body = aimer->getArmature()->getPhysicsBody();
+		if( body )
+		{
+			auto box = dynamic_cast<PhysicsShapeBox*>( body->getFirstShape() );
+			m_aimBox->setBoxPosition( aimer->getArmature()->getPosition() );
+			m_aimBox->setBoxWidth( box->getSize().width );
+			float h = aimer->getArmature()->getBoundingBox().getMaxY()
+					- aimer->getArmature()->getBoundingBox().getMinY();
+			m_aimBox->setBoxHeight( h );
+		}
+#elif
 		auto rect = aimer->getArmature()->getBoundingBox();
 		m_aimBox->setBoxPosition( Vec2(rect.getMidX(),rect.getMidY()) );
 		m_aimBox->setBoxWidth( rect.getMaxX()-rect.getMinX() );
 		m_aimBox->setBoxHeight( rect.getMaxY()-rect.getMinY() );
+#endif
 		m_aimBox->showUp( true );
 		if( auto t = aimer->getTarget() )
 		{
 			// show the target box
+#if CC_USE_PHYSICS
+			PhysicsBody* body = t->getArmature()->getPhysicsBody();
+			if( body )
+			{
+				auto box = dynamic_cast<PhysicsShapeBox*>( body->getFirstShape() );
+				m_targetBox->setBoxPosition( t->getArmature()->getPosition() );
+				m_targetBox->setBoxWidth( box->getSize().width );
+				float h = t->getArmature()->getBoundingBox().getMaxY()
+						- t->getArmature()->getBoundingBox().getMinY();
+				m_targetBox->setBoxHeight( h );
+			}
+#elif
 			auto rect = t->getArmature()->getBoundingBox();
 			m_targetBox->setBoxPosition( Vec2(rect.getMidX(),rect.getMidY()) );
 			m_targetBox->setBoxWidth( rect.getMaxX()-rect.getMinX() );
 			m_targetBox->setBoxHeight( rect.getMaxY()-rect.getMinY() );
+#endif
 			m_targetBox->showUp( true );
 			// draw curve to the target box
 			//...
@@ -91,10 +117,23 @@ void PauseLayer::processTouchEnded( Touch* touch, Event* event )
 	if( target && m_pAimer )
 	{
 		// move targeting box to the characters selected
+#if CC_USE_PHYSICS
+		PhysicsBody* body = target->getArmature()->getPhysicsBody();
+		if( body )
+		{
+			auto box = dynamic_cast<PhysicsShapeBox*>( body->getFirstShape() );
+			m_targetBox->setBoxPosition( target->getArmature()->getPosition() );
+			m_targetBox->setBoxWidth( box->getSize().width );
+			float h = target->getArmature()->getBoundingBox().getMaxY()
+					- target->getArmature()->getBoundingBox().getMinY();
+			m_targetBox->setBoxHeight( h );
+		}
+#elif
 		auto rect = target->getArmature()->getBoundingBox();
 		m_targetBox->setBoxPosition( Vec2(rect.getMidX(),rect.getMidY()) );
 		m_targetBox->setBoxWidth( rect.getMaxX()-rect.getMinX() );
 		m_targetBox->setBoxHeight( rect.getMaxY()-rect.getMinY() );
+#endif
 		m_targetBox->showUp( true );
 		m_pAimer->setTarget( target );
 		// draw targeting curve
