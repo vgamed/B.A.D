@@ -10,10 +10,7 @@ class PauseLayer :
 	public cocos2d::Layer
 {
 public:
-	PauseLayer(void);
-	~PauseLayer(void);
-
-    bool init(void);
+	CREATE_FUNC( PauseLayer );
 
 	void setBoundLayer( GameLayer* layer )
 	{
@@ -25,9 +22,16 @@ public:
 
 	void processTouchEnded( cocos2d::Touch* touch, cocos2d::Event* event );
 
-	CREATE_FUNC( PauseLayer );
+protected:
+	PauseLayer(void);
+	~PauseLayer(void);
+
+    bool init(void);
 
 private:
+	void bringCharFromLayerBound( AimBox* box, Character* ch );
+	void putBackCharToLayerBound( AimBox* box );
+
 	GameLayer* m_pLayerBound;
 	Character* m_pAimer;
 	Character* m_pTarget;

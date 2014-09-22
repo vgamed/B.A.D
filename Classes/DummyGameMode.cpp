@@ -95,7 +95,7 @@ bool DummyGameMode::initGame( Layer * layer )
 	CharInfo info;
 	CharState state;
 	Armature* arm;
-	char str[10] = {'\0'};
+	char str[12] = {'\0'};
 
 	do{
 		info.level = 1;
@@ -114,7 +114,8 @@ bool DummyGameMode::initGame( Layer * layer )
 		state.facingTo = Vec2( 1.0f, 0.0f );
 
 		info.id = 102;
-		info.name = "Hero" + _itoa_s(info.id, str, 10);
+		sprintf( str, "%s%ld", "Hero", info.id );
+		info.name = str;
 		state.front = Vec2( -1.0f, 0.0f );
 		arm = Armature::create("monster");
 		CC_BREAK_IF( !arm );
@@ -122,23 +123,26 @@ bool DummyGameMode::initGame( Layer * layer )
 		m_teamPlayer.tm.m.bm->init(info, state, arm);
 
 		info.id = 103;
-		info.name = "Hero" + _itoa_s(info.id, str, 10);
+		sprintf( str, "%s%ld", "Hero", info.id );
+		info.name = str;
 		state.front = Vec2( 1.0f, 0.0f );
 		arm = Armature::create("girl");
 		CC_BREAK_IF( !arm );
 		m_teamPlayer.tm.m.fm = new Hero();
 		m_teamPlayer.tm.m.fm->init(info, state, arm);
 
-		info.id = 104;
-		info.name = "Hero" + _itoa_s(info.id, str, 10);
-		state.front = Vec2( 1.0f, 0.0f );
-		arm = Armature::create("girl");
-		CC_BREAK_IF( !arm );
-		m_teamPlayer.tm.m.mu = new Hero();
-		m_teamPlayer.tm.m.mu->init(info, state, arm);
+		//info.id = 104;
+		//sprintf( str, "%s%ld", "Hero", info.id );
+		//info.name = str;
+		//state.front = Vec2( 1.0f, 0.0f );
+		//arm = Armature::create("girl");
+		//CC_BREAK_IF( !arm );
+		//m_teamPlayer.tm.m.mu = new Hero();
+		//m_teamPlayer.tm.m.mu->init(info, state, arm);
 
 		info.id = 105;
-		info.name = "Hero" + _itoa_s(info.id, str, 10);
+		sprintf( str, "%s%ld", "Hero", info.id );
+		info.name = str;
 		state.front = Vec2( 1.0f, 0.0f );
 		arm = Armature::create("girl");
 		CC_BREAK_IF( !arm );
@@ -161,23 +165,26 @@ bool DummyGameMode::initGame( Layer * layer )
 		state.facingTo = Vec2( -1.0f, 0.0f );
 
 		info.id = 202;
-		info.name = "Monster" + _itoa_s(info.id, str, 10);
+		sprintf( str, "%s%ld", "Monster", info.id );
+		info.name = str;
 		state.front = Vec2( 1.0f, 0.0f );
 		arm = Armature::create("girl");
 		CC_BREAK_IF( !arm );
 		m_teamEnemy.tm.m.bm = new Monster();
 		m_teamEnemy.tm.m.bm->init(info, state, arm);
 
-		info.id = 203;
-		info.name = "Monster" + _itoa_s(info.id, str, 10);
-		state.front = Vec2( -1.0f, 0.0f );
-		arm = Armature::create("monster");
-		CC_BREAK_IF( !arm );
-		m_teamEnemy.tm.m.fm = new Monster();
-		m_teamEnemy.tm.m.fm->init(info, state, arm);
+		//info.id = 203;
+		//sprintf( str, "%s%ld", "Monster", info.id );
+		//info.name = str;
+		//state.front = Vec2( -1.0f, 0.0f );
+		//arm = Armature::create("monster");
+		//CC_BREAK_IF( !arm );
+		//m_teamEnemy.tm.m.fm = new Monster();
+		//m_teamEnemy.tm.m.fm->init(info, state, arm);
 
 		info.id = 204;
-		info.name = "Monster" + _itoa_s(info.id, str, 10);
+		sprintf( str, "%s%ld", "Monster", info.id );
+		info.name = str;
 		state.front = Vec2( -1.0f, 0.0f );
 		arm = Armature::create("monster");
 		CC_BREAK_IF( !arm );
@@ -185,7 +192,8 @@ bool DummyGameMode::initGame( Layer * layer )
 		m_teamEnemy.tm.m.fu->init(info, state, arm);
 
 		info.id = 205;
-		info.name = "Monster" + _itoa_s(info.id, str, 10);
+		sprintf( str, "%s%ld", "Monster", info.id );
+		info.name = str;
 		state.front = Vec2( -1.0f, 0.0f );
 		arm = Armature::create("monster");
 		CC_BREAK_IF( !arm );

@@ -2,6 +2,8 @@
 #include "cocostudio/CocoStudio.h"
 #include "cocos-ext.h"
 
+#include "StateMachine.h"
+#include "Character.h"
 #include "AimBox.h"
 
 USING_NS_CC;
@@ -9,6 +11,8 @@ USING_NS_CC_EXT;
 
 AimBox::AimBox(void)
 {
+	m_pCharBound = nullptr;
+	m_showUp = false;
 }
 
 
@@ -16,8 +20,8 @@ AimBox::~AimBox(void)
 {
 }
 
-AimBox* AimBox::create( Vec2& pos, bool show, 
-					   cocos2d::Color4F& color,
+AimBox* AimBox::create( Vec2 pos, bool show,
+					   cocos2d::Color4F color,
 					   float width,	float height )
 {
 	AimBox* box = new AimBox();
@@ -53,7 +57,7 @@ void AimBox::showUp( bool show )
 		this->drawBox( Vec2(-100.0f,-100.0f), Color4F(0.0f,0.0f,0.0f,0.0f) );
 }
 
-void AimBox::drawBox( Vec2& pos, Color4F& color )
+void AimBox::drawBox( Vec2 pos, Color4F color )
 {
 	Vec2 verts[4];
 	verts[0] = Vec2( pos.x-m_width/2, pos.y );
@@ -62,7 +66,18 @@ void AimBox::drawBox( Vec2& pos, Color4F& color )
 	verts[3] = Vec2( pos.x+m_width/2, pos.y );
 
 	this->clear();
-	this->drawPolygon( verts, 4, Color4F(0.0f,0.0f,0.0f,0.0f), 2.0f, color );
+	//this->drawPolygon( verts, 4, Color4F(0.0f,0.0f,0.0f,0.0f), 2.0f, color );
+	this->drawSegment( verts[0], Vec2(verts[0].x+15.0f,verts[0].y), 2.0f, color );
+	this->drawSegment( verts[0], Vec2(verts[0].x,verts[0].y+15.0f), 2.0f, color );
+
+	this->drawSegment( verts[1], Vec2(verts[1].x+15.0f,verts[1].y), 2.0f, color );
+	this->drawSegment( verts[1], Vec2(verts[1].x,verts[1].y-15.0f), 2.0f, color );
+
+	this->drawSegment( verts[2], Vec2(verts[2].x-15.0f,verts[2].y), 2.0f, color );
+	this->drawSegment( verts[2], Vec2(verts[2].x,verts[2].y-15.0f), 2.0f, color );
+
+	this->drawSegment( verts[3], Vec2(verts[3].x-15.0f,verts[3].y), 2.0f, color );
+	this->drawSegment( verts[3], Vec2(verts[3].x,verts[3].y+15.0f), 2.0f, color );
 }
 
 //void AimBox::draw( Renderer* renderer, const Mat4& transform, bool transformUpdated )

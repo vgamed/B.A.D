@@ -34,7 +34,7 @@ Scene* FightScene::createScene()
 {
 #if CC_USE_PHYSICS
     auto scene = Scene::createWithPhysics();
-	scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
+	//scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
 #elif
 	auto scene = Scene::create();
 #endif
@@ -115,8 +115,6 @@ void FightScene::onEnterTransitionDidFinish(void)
 		m_pGameMode->startGame();
 	}
 
-	getPhyWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
-
 	this->getScene()->scheduleUpdate();
 	this->scheduleUpdate();
 }
@@ -124,8 +122,6 @@ void FightScene::onEnterTransitionDidFinish(void)
 void FightScene::menuQuitGameCallback(Ref* pSender)
 {
 	m_pGameMode->endGame();
-
-	getPhyWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_NONE);
 
 	//Director::getInstance()->popScene();
 	Director::getInstance()->replaceScene( 

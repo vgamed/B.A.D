@@ -113,11 +113,29 @@ bool Hero::findDefaultTarget( Team* enemies )
 	if( enemies == nullptr )
 		return false;
 
-	// quickly locate the target, temporarily
-	if( !enemies->tm.m.bm || enemies->tm.m.bm->isDead() )
+	auto pos = getArmature()->getPosition();
+	float dist = FLT_MAX;
+	m_pTarget = nullptr;
+
+	// find the target by minimum distance
+	for( int i=0; i<NUM_TEAM_MEMBER; ++i )
+	{
+		auto c = enemies->tm.ma[i];
+		if( !c || c->isDead() )
+			continue;
+		auto arm_e = c->getArmature();
+		Vec2 pos_e = arm_e->getPosition();
+		float dist_e = pos.distance( pos_e );
+		if( dist_e < dist )
+		{
+			dist = dist_e;
+			m_pTarget = c;
+		}
+	}
+
+	if( !m_pTarget )
 		return false;
 
-	m_pTarget = enemies->tm.m.bm;
 	return true;
 }
 

@@ -2,8 +2,13 @@
 #include "cocostudio/CocoStudio.h"
 #include "cocos-ext.h"
 
+#include "AppDelegate.h"
 #include "StateMachine.h"
 #include "Character.h"
+#include "Team.h"
+#include "GameMode.h"
+#include "DummyGameMode.h"
+#include "FightScene.h"
 #include "AimBox.h"
 #include "GameLayer.h"
 #include "PauseLayer.h"
@@ -24,6 +29,9 @@ PauseLayer::PauseLayer(void)
 
 PauseLayer::~PauseLayer(void)
 {
+	putBackCharToLayerBound( m_aimBox );
+	putBackCharToLayerBound( m_targetBox );
+
 	if( m_pLayerBound )
 		m_pLayerBound->release();
 	if( m_aimBox )
@@ -34,25 +42,71 @@ PauseLayer::~PauseLayer(void)
 
 bool PauseLayer::init(void)
 {
-	auto listener = EventListenerTouchOneByOne::create();
-	listener->setSwallowTouches( false );
-	listener->onTouchBegan = [](Touch* touch, Event* event) -> bool { return true; };
-	listener->onTouchMoved = [](Touch* touch, Event* event) {};
-	listener->onTouchEnded = [&](Touch* touch, Event* event) { this->processTouchEnded( touch, event );	};
-	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority( listener, this );
-	// create background
+	if( Layer::init() )
+	{
+		auto listener = EventListenerTouchOneByOne::create();
+		listener->setSwallowTouches( false );
+		listener->onTouchBegan = [](Touch* touch, Event* event) -> bool { return true; };
+		listener->onTouchMoved = [](Touch* touch, Event* event) {};
+		listener->onTouchEnded = [&](Touch* touch, Event* event) { this->processTouchEnded( touch, event );	};
+		Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority( listener, this );
+		
+		// create background
+		Vec2 verts[4];
+		verts[0] = Vec2( 0.0f, AppDelegate::DESIGN_RESOLUTION.height/8 );
+		verts[1] = Vec2( 0.0f, AppDelegate::DESIGN_RESOLUTION.height*2/3 );
+		verts[2] = Vec2( AppDelegate::DESIGN_RESOLUTION.width, AppDelegate::DESIGN_RESOLUTION.height*2/3 );
+		verts[3] = Vec2( AppDelegate::DESIGN_RESOLUTION.width, AppDelegate::DESIGN_RESOLUTION.height/8 );
+		auto bg = DrawNode::create();
+		bg->drawPolygon( verts, 4, Color4F(0.1f,0.1f,0.1f,0.75f), 1, Color4F(1.0f,1.0f,1.0f,1.0f) );
+		addChild( bg, 0 );
 
-	// create TargetBox
-	m_targetBox = AimBox::create( Vec2(0.0f,0.0f), false, Color4F(1.0f,0.0f,0.0f,1.0f) );
-	m_targetBox->retain();
-	addChild( m_targetBox, 100 );
+		// create TargetBox
+		m_targetBox = AimBox::create( Vec2(0.0f,0.0f), false, Color4F(1.0f,0.0f,0.0f,1.0f) );
+		m_targetBox->retain();
+		addChild( m_targetBox, 100 );
 
-	// create AimerBox
-	m_aimBox = AimBox::create( Vec2(0.0f,0.0f), false, Color4F(0.0f,1.0f,0.0f,1.0f) );
-	m_aimBox->retain();
-	addChild( m_aimBox, 100 );
+		// create AimerBox
+		m_aimBox = AimBox::create( Vec2(0.0f,0.0f), false, Color4F(0.0f,1.0f,0.0f,1.0f) );
+		m_aimBox->retain();
+		addChild( m_aimBox, 100 );
 
-	return true;
+		return true;
+	}
+	return false;
+}
+
+void PauseLayer::bringCharFromLayerBound( AimBox* box, Character* ch )
+{
+	if( box && ch && m_pLayerBound )
+	{
+		if( box->getCharBound() )
+			putBackCharToLayerBound( box );
+
+		m_pLayerBound->removeChild( ch->getArmature(), false );
+		box->addChild( ch->getArmature() );
+
+		box->setCharBound( ch );
+	}
+}
+
+void PauseLayer::putBackCharToLayerBound( AimBox* box )
+{
+	if( box && box->getCharBound() && m_pLayerBound )
+	{
+		box->removeAllChildren();
+		auto arm = box->getCharBound()->getArmature();
+		m_pLayerBound->addChild( arm, 0, box->getCharBound()->getCharInfo().id );
+
+		FightScene* fight = dynamic_cast<FightScene*>( m_pLayerBound );
+		if( fight ) 
+		{
+			DummyGameMode* mode = dynamic_cast<DummyGameMode*>(fight->getGameMode());
+			arm->setLocalZOrder( mode->calcZOrder(arm->getPositionY()) );
+		}
+
+		box->setCharBound( nullptr );
+	}
 }
 
 void PauseLayer::processTouchEnded( Touch* touch, Event* event )
@@ -75,6 +129,8 @@ void PauseLayer::processTouchEnded( Touch* touch, Event* event )
 			float h = aimer->getArmature()->getBoundingBox().getMaxY()
 					- aimer->getArmature()->getBoundingBox().getMinY();
 			m_aimBox->setBoxHeight( h );
+
+			bringCharFromLayerBound( m_aimBox, aimer );
 		}
 #elif
 		auto rect = aimer->getArmature()->getBoundingBox();
@@ -96,6 +152,8 @@ void PauseLayer::processTouchEnded( Touch* touch, Event* event )
 				float h = t->getArmature()->getBoundingBox().getMaxY()
 						- t->getArmature()->getBoundingBox().getMinY();
 				m_targetBox->setBoxHeight( h );
+
+				bringCharFromLayerBound( m_targetBox, t );
 			}
 #elif
 			auto rect = t->getArmature()->getBoundingBox();
@@ -127,6 +185,8 @@ void PauseLayer::processTouchEnded( Touch* touch, Event* event )
 			float h = target->getArmature()->getBoundingBox().getMaxY()
 					- target->getArmature()->getBoundingBox().getMinY();
 			m_targetBox->setBoxHeight( h );
+
+			bringCharFromLayerBound( m_targetBox, target );
 		}
 #elif
 		auto rect = target->getArmature()->getBoundingBox();
