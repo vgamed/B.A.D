@@ -32,15 +32,15 @@ public:
 	static const cocos2d::Vec2 PLAYER_B_M;
 	static const cocos2d::Vec2 PLAYER_B_B;
 
-	static const cocos2d::Vec2 ENEMY_F_U;
-	static const cocos2d::Vec2 ENEMY_F_M;
-	static const cocos2d::Vec2 ENEMY_F_B;
-	static const cocos2d::Vec2 ENEMY_M_U;
-	static const cocos2d::Vec2 ENEMY_M_M;
-	static const cocos2d::Vec2 ENEMY_M_B;
-	static const cocos2d::Vec2 ENEMY_B_U;
-	static const cocos2d::Vec2 ENEMY_B_M;
-	static const cocos2d::Vec2 ENEMY_B_B;
+	static const cocos2d::Vec2 MONSTER_F_U;
+	static const cocos2d::Vec2 MONSTER_F_M;
+	static const cocos2d::Vec2 MONSTER_F_B;
+	static const cocos2d::Vec2 MONSTER_M_U;
+	static const cocos2d::Vec2 MONSTER_M_M;
+	static const cocos2d::Vec2 MONSTER_M_B;
+	static const cocos2d::Vec2 MONSTER_B_U;
+	static const cocos2d::Vec2 MONSTER_B_M;
+	static const cocos2d::Vec2 MONSTER_B_B;
 
 	DummyGameMode(void);
 	~DummyGameMode(void);
@@ -51,15 +51,15 @@ public:
 	void endGame(void);
 	void resetGame(void);
 
-	Team& getPlayerTeam(void) { return m_teamPlayer; }
-	Team& getEnemyTeam(void) { return m_teamEnemy; }
+	Team& getHeroTeam(void) { return m_teamHero; }
+	Team& getMonsterTeam(void) { return m_teamMonster; }
 
 	int calcZOrder( float y );
 
 private:
 	cocos2d::Layer* m_layer;
-	Team m_teamPlayer;
-	Team m_teamEnemy;
+	Team m_teamHero;
+	Team m_teamMonster;
 
 };
 

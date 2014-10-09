@@ -23,12 +23,6 @@ public:
 	void onAnimationEvent( cocostudio::Armature* arm, 
 		cocostudio::MovementEventType type, const std::string& movementID );
 
-	bool findDefaultTarget( Team* enemies );
-
-	friend class StateHeroGlobalState;
-	friend class StateHeroMove;
-	friend class StateHeroAttack;
-
 	State<Character>*	STATE_GLOBAL;
 	State<Character>*	STATE_IDLE;
 	State<Character>*	STATE_MOVE;
@@ -58,8 +52,8 @@ public:
 	void exit( Character* c );
 
 private:
-	Team* m_teamPlayer;
-	Team* m_teamEnemy;
+	Team* m_teamHero;
+	Team* m_teamMonster;
 };
 
 // move state of hero

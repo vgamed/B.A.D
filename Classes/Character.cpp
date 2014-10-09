@@ -87,6 +87,37 @@ void Character::reset( void )
 	m_pTarget = nullptr;
 }
 
+bool Character::findDefaultTarget( Character** enemies, int number )
+{
+	if( enemies == nullptr )
+		return false;
+
+	auto pos = getArmature()->getPosition();
+	float dist = FLT_MAX;
+	m_pTarget = nullptr;
+
+	// find the target by minimum distance
+	for( int i=0; i<number; ++i )
+	{
+		auto c = enemies[i];
+		if( !c || c->isDead() )
+			continue;
+		auto arm_e = c->getArmature();
+		Vec2 pos_e = arm_e->getPosition();
+		float dist_e = pos.distance( pos_e );
+		if( dist_e < dist )
+		{
+			dist = dist_e;
+			m_pTarget = c;
+		}
+	}
+
+	if( !m_pTarget )
+		return false;
+
+	return true;
+}
+
 Vec2 Character::calcMoveTo( void )
 {
 	if( !m_pTarget )

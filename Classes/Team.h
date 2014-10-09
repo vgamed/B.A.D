@@ -5,7 +5,7 @@
 
 class Character;
 
-struct Member
+struct TeamByPosition
 {
 	Character* fu;
 	Character* fm;
@@ -20,9 +20,9 @@ struct Member
 	Character* bb;
 };
 
-union TeamMember
+union TeamUnion
 {
-	struct Member m;
+	TeamByPosition m;
 	Character* ma[NUM_TEAM_MEMBER];
 };
 
@@ -33,10 +33,13 @@ public:
 	~Team(void);
 
 	void update( float dt );
-	void deploy( cocos2d::Layer* layer );
 	void clear(void);
 
-	TeamMember tm;
+	Character** retrieveTeamArray( void ) { return m_team.ma; }
+	TeamByPosition& retrieveTeamByPosition( void ) { return m_team.m; }
+
+private:
+	TeamUnion m_team;
 };
 
 #endif //__GAME_TEAM_H__

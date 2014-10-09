@@ -42,25 +42,25 @@ const Vec2 DummyGameMode::PLAYER_M_M = Vec2((DummyGameMode::PLAYER_F_M.x+DummyGa
 const Vec2 DummyGameMode::PLAYER_M_B = Vec2((DummyGameMode::PLAYER_F_B.x+DummyGameMode::PLAYER_B_B.x)/2, 
 											DummyGameMode::BF_LT_BTM.y+DummyGameMode::SLOT_OFFSET.height);
 
-const Vec2 DummyGameMode::ENEMY_F_U = Vec2(AppDelegate::DESIGN_RESOLUTION.width/2+DummyGameMode::SLOT_OFFSET.width,
+const Vec2 DummyGameMode::MONSTER_F_U = Vec2(AppDelegate::DESIGN_RESOLUTION.width/2+DummyGameMode::SLOT_OFFSET.width,
 								   		DummyGameMode::BF_RT_TOP.y-DummyGameMode::SLOT_OFFSET.height);
-const Vec2 DummyGameMode::ENEMY_F_M = Vec2(AppDelegate::DESIGN_RESOLUTION.width/2+DummyGameMode::SLOT_OFFSET.width,
+const Vec2 DummyGameMode::MONSTER_F_M = Vec2(AppDelegate::DESIGN_RESOLUTION.width/2+DummyGameMode::SLOT_OFFSET.width,
 								   		(DummyGameMode::BF_RT_TOP.y+DummyGameMode::BF_LT_BTM.y)/2);
-const Vec2 DummyGameMode::ENEMY_F_B = Vec2(AppDelegate::DESIGN_RESOLUTION.width/2+DummyGameMode::SLOT_OFFSET.width,
+const Vec2 DummyGameMode::MONSTER_F_B = Vec2(AppDelegate::DESIGN_RESOLUTION.width/2+DummyGameMode::SLOT_OFFSET.width,
 								   		DummyGameMode::BF_LT_BTM.y+DummyGameMode::SLOT_OFFSET.height);
 
-const Vec2 DummyGameMode::ENEMY_B_U = Vec2(AppDelegate::DESIGN_RESOLUTION.width-DummyGameMode::SLOT_OFFSET.width, 
+const Vec2 DummyGameMode::MONSTER_B_U = Vec2(AppDelegate::DESIGN_RESOLUTION.width-DummyGameMode::SLOT_OFFSET.width, 
 								   		DummyGameMode::BF_RT_TOP.y-DummyGameMode::SLOT_OFFSET.height);
-const Vec2 DummyGameMode::ENEMY_B_M = Vec2(AppDelegate::DESIGN_RESOLUTION.width-DummyGameMode::SLOT_OFFSET.width, 
+const Vec2 DummyGameMode::MONSTER_B_M = Vec2(AppDelegate::DESIGN_RESOLUTION.width-DummyGameMode::SLOT_OFFSET.width, 
 								   		(DummyGameMode::BF_RT_TOP.y+DummyGameMode::BF_LT_BTM.y)/2);
-const Vec2 DummyGameMode::ENEMY_B_B = Vec2(AppDelegate::DESIGN_RESOLUTION.width-DummyGameMode::SLOT_OFFSET.width, 
+const Vec2 DummyGameMode::MONSTER_B_B = Vec2(AppDelegate::DESIGN_RESOLUTION.width-DummyGameMode::SLOT_OFFSET.width, 
 								   		DummyGameMode::BF_LT_BTM.y+DummyGameMode::SLOT_OFFSET.height);
 
-const Vec2 DummyGameMode::ENEMY_M_U = Vec2((DummyGameMode::ENEMY_F_U.x+DummyGameMode::ENEMY_B_U.x)/2, 
+const Vec2 DummyGameMode::MONSTER_M_U = Vec2((DummyGameMode::MONSTER_F_U.x+DummyGameMode::MONSTER_B_U.x)/2, 
 								   		DummyGameMode::BF_RT_TOP.y-DummyGameMode::SLOT_OFFSET.height);
-const Vec2 DummyGameMode::ENEMY_M_M = Vec2((DummyGameMode::ENEMY_F_M.x+DummyGameMode::ENEMY_B_M.x)/2, 
+const Vec2 DummyGameMode::MONSTER_M_M = Vec2((DummyGameMode::MONSTER_F_M.x+DummyGameMode::MONSTER_B_M.x)/2, 
 								   		(DummyGameMode::BF_RT_TOP.y+DummyGameMode::BF_LT_BTM.y)/2);
-const Vec2 DummyGameMode::ENEMY_M_B = Vec2((DummyGameMode::ENEMY_F_B.x+DummyGameMode::ENEMY_B_B.x)/2, 
+const Vec2 DummyGameMode::MONSTER_M_B = Vec2((DummyGameMode::MONSTER_F_B.x+DummyGameMode::MONSTER_B_B.x)/2, 
 								   		DummyGameMode::BF_LT_BTM.y+DummyGameMode::SLOT_OFFSET.height);
 
 DummyGameMode::DummyGameMode(void)
@@ -119,8 +119,8 @@ bool DummyGameMode::initGame( Layer * layer )
 		state.front = Vec2( -1.0f, 0.0f );
 		arm = Armature::create("monster");
 		CC_BREAK_IF( !arm );
-		m_teamPlayer.tm.m.bm = new Hero();
-		m_teamPlayer.tm.m.bm->init(info, state, arm);
+		m_teamHero.retrieveTeamByPosition().bm = new Hero();
+		m_teamHero.retrieveTeamByPosition().bm->init(info, state, arm);
 
 		info.id = 103;
 		sprintf( str, "%s%ld", "Hero", info.id );
@@ -128,8 +128,8 @@ bool DummyGameMode::initGame( Layer * layer )
 		state.front = Vec2( 1.0f, 0.0f );
 		arm = Armature::create("girl");
 		CC_BREAK_IF( !arm );
-		m_teamPlayer.tm.m.fm = new Hero();
-		m_teamPlayer.tm.m.fm->init(info, state, arm);
+		m_teamHero.retrieveTeamByPosition().fm = new Hero();
+		m_teamHero.retrieveTeamByPosition().fm->init(info, state, arm);
 
 		//info.id = 104;
 		//sprintf( str, "%s%ld", "Hero", info.id );
@@ -137,8 +137,8 @@ bool DummyGameMode::initGame( Layer * layer )
 		//state.front = Vec2( 1.0f, 0.0f );
 		//arm = Armature::create("girl");
 		//CC_BREAK_IF( !arm );
-		//m_teamPlayer.tm.m.mu = new Hero();
-		//m_teamPlayer.tm.m.mu->init(info, state, arm);
+		//m_teamHero.retrieveTeamByPosition().mu = new Hero();
+		//m_teamHero.retrieveTeamByPosition().mu->init(info, state, arm);
 
 		info.id = 105;
 		sprintf( str, "%s%ld", "Hero", info.id );
@@ -146,8 +146,8 @@ bool DummyGameMode::initGame( Layer * layer )
 		state.front = Vec2( 1.0f, 0.0f );
 		arm = Armature::create("girl");
 		CC_BREAK_IF( !arm );
-		m_teamPlayer.tm.m.mb = new Hero();
-		m_teamPlayer.tm.m.mb->init(info, state, arm);
+		m_teamHero.retrieveTeamByPosition().mb = new Hero();
+		m_teamHero.retrieveTeamByPosition().mb->init(info, state, arm);
 
 		info.level = 1;
 		info.type = COMBAT_MELEE;
@@ -170,8 +170,8 @@ bool DummyGameMode::initGame( Layer * layer )
 		state.front = Vec2( 1.0f, 0.0f );
 		arm = Armature::create("girl");
 		CC_BREAK_IF( !arm );
-		m_teamEnemy.tm.m.bm = new Monster();
-		m_teamEnemy.tm.m.bm->init(info, state, arm);
+		m_teamMonster.retrieveTeamByPosition().bm = new Monster();
+		m_teamMonster.retrieveTeamByPosition().bm->init(info, state, arm);
 
 		//info.id = 203;
 		//sprintf( str, "%s%ld", "Monster", info.id );
@@ -179,8 +179,8 @@ bool DummyGameMode::initGame( Layer * layer )
 		//state.front = Vec2( -1.0f, 0.0f );
 		//arm = Armature::create("monster");
 		//CC_BREAK_IF( !arm );
-		//m_teamEnemy.tm.m.fm = new Monster();
-		//m_teamEnemy.tm.m.fm->init(info, state, arm);
+		//m_teamMonster.retrieveTeamByPosition().fm = new Monster();
+		//m_teamMonster.retrieveTeamByPosition().fm->init(info, state, arm);
 
 		info.id = 204;
 		sprintf( str, "%s%ld", "Monster", info.id );
@@ -188,8 +188,8 @@ bool DummyGameMode::initGame( Layer * layer )
 		state.front = Vec2( -1.0f, 0.0f );
 		arm = Armature::create("monster");
 		CC_BREAK_IF( !arm );
-		m_teamEnemy.tm.m.fu = new Monster();
-		m_teamEnemy.tm.m.fu->init(info, state, arm);
+		m_teamMonster.retrieveTeamByPosition().fu = new Monster();
+		m_teamMonster.retrieveTeamByPosition().fu->init(info, state, arm);
 
 		info.id = 205;
 		sprintf( str, "%s%ld", "Monster", info.id );
@@ -197,8 +197,8 @@ bool DummyGameMode::initGame( Layer * layer )
 		state.front = Vec2( -1.0f, 0.0f );
 		arm = Armature::create("monster");
 		CC_BREAK_IF( !arm );
-		m_teamEnemy.tm.m.fb= new Monster();
-		m_teamEnemy.tm.m.fb->init(info, state, arm);
+		m_teamMonster.retrieveTeamByPosition().fb= new Monster();
+		m_teamMonster.retrieveTeamByPosition().fb->init(info, state, arm);
 
 		return true;
 	}while(0);
@@ -213,15 +213,15 @@ bool DummyGameMode::startGame(void)
 	if( !isGameStarted() )
 	{
 		// deploy teams into battle field
-		m_teamPlayer.tm.m.fm->deploy( m_layer, PLAYER_F_M );
-		//m_teamPlayer.tm.m.mu->deploy( m_layer, PLAYER_M_U );
-		m_teamPlayer.tm.m.mb->deploy( m_layer, PLAYER_M_B );
-		m_teamPlayer.tm.m.bm->deploy( m_layer, PLAYER_B_M );
+		m_teamHero.retrieveTeamByPosition().fm->deploy( m_layer, PLAYER_F_M );
+		//m_teamHero.retrieveTeamByPosition().mu->deploy( m_layer, PLAYER_M_U );
+		m_teamHero.retrieveTeamByPosition().mb->deploy( m_layer, PLAYER_M_B );
+		m_teamHero.retrieveTeamByPosition().bm->deploy( m_layer, PLAYER_B_M );
 
-		m_teamEnemy.tm.m.fu->deploy( m_layer, ENEMY_F_U );
-		//m_teamEnemy.tm.m.fm->deploy( m_layer, ENEMY_F_M );
-		m_teamEnemy.tm.m.fb->deploy( m_layer, ENEMY_F_B );
-		m_teamEnemy.tm.m.bm->deploy( m_layer, ENEMY_B_M );
+		m_teamMonster.retrieveTeamByPosition().fu->deploy( m_layer, MONSTER_F_U );
+		//m_teamMonster.retrieveTeamByPosition().fm->deploy( m_layer, MONSTER_F_M );
+		m_teamMonster.retrieveTeamByPosition().fb->deploy( m_layer, MONSTER_F_B );
+		m_teamMonster.retrieveTeamByPosition().bm->deploy( m_layer, MONSTER_B_M );
 
 		setGameStarted( true );
 	}
@@ -232,8 +232,8 @@ void DummyGameMode::updateGame(float dt)
 {
 	if( isGameStarted() )
 	{
-		m_teamPlayer.update( dt );
-		m_teamEnemy.update( dt );
+		m_teamHero.update( dt );
+		m_teamMonster.update( dt );
 	}
 }
 
@@ -247,8 +247,8 @@ void DummyGameMode::resetGame(void)
 	setGameStarted(false);
 
 	m_layer = nullptr;
-	m_teamEnemy.clear();
-	m_teamPlayer.clear();
+	m_teamMonster.clear();
+	m_teamHero.clear();
 }
 
 int DummyGameMode::calcZOrder( float y )

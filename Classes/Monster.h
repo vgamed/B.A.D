@@ -21,10 +21,10 @@ public:
 	void onAnimationEvent( cocostudio::Armature* arm, 
 		cocostudio::MovementEventType type, const std::string& movementID );
 
-	friend class StateMonsterGlobal;
-
 	State<Character>*	STATE_GLOBAL;
 	State<Character>*	STATE_IDLE;
+	State<Character>*	STATE_MOVE;
+	State<Character>*	STATE_ATTACK;
 	State<Character>*	STATE_DEAD;
 
 private:
@@ -46,6 +46,31 @@ class StateMonsterIdle : public State<Character>
 	void enter( Character* c );
 	void exec( Character* c, float dt );
 	void exit( Character* c );
+
+private:
+	Team* m_teamHero;
+	Team* m_teamMonster;
+};
+
+// Monster move state
+class StateMonsterMove : public State<Character>
+{
+public:
+	void enter( Character* c );
+	void exec( Character* c, float dt );
+	void exit( Character* c );
+};
+
+// attack state of hero
+class StateMonsterAttack : public State<Character>
+{
+public:
+	void enter( Character* c );
+	void exec( Character* c, float dt );
+	void exit( Character* c );
+
+private:
+	float m_timeToAttack;
 };
 
 // Monster Dead State

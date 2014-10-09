@@ -12,7 +12,7 @@ Team::Team(void)
 {
 	for( int i=0; i<NUM_TEAM_MEMBER; i++ )
 	{
-		tm.ma[i] = nullptr;
+		m_team.ma[i] = nullptr;
 	}
 }
 
@@ -25,19 +25,15 @@ void Team::update( float dt )
 {
 	for( int i=0; i<NUM_TEAM_MEMBER; i++ )
 	{
-		if( tm.ma[i] )
-			tm.ma[i]->update( dt );
+		if( m_team.ma[i] )
+			m_team.ma[i]->update( dt );
 	}
-}
-
-void Team::deploy( Layer* layer )
-{
 }
 
 void Team::clear(void)
 {
 	for( int i=0; i<NUM_TEAM_MEMBER; i++ )
 	{
-		delete tm.ma[i];
+		delete m_team.ma[i];
 	}
 }

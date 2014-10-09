@@ -108,37 +108,6 @@ void Hero::doDamage( float phy_atk, float mgc_atk )
 {
 }
 
-bool Hero::findDefaultTarget( Team* enemies )
-{
-	if( enemies == nullptr )
-		return false;
-
-	auto pos = getArmature()->getPosition();
-	float dist = FLT_MAX;
-	m_pTarget = nullptr;
-
-	// find the target by minimum distance
-	for( int i=0; i<NUM_TEAM_MEMBER; ++i )
-	{
-		auto c = enemies->tm.ma[i];
-		if( !c || c->isDead() )
-			continue;
-		auto arm_e = c->getArmature();
-		Vec2 pos_e = arm_e->getPosition();
-		float dist_e = pos.distance( pos_e );
-		if( dist_e < dist )
-		{
-			dist = dist_e;
-			m_pTarget = c;
-		}
-	}
-
-	if( !m_pTarget )
-		return false;
-
-	return true;
-}
-
 void Hero::calcActualState(void)
 {
 	m_actualState = m_basicState;
@@ -192,8 +161,8 @@ void StateHeroIdle::enter( Character* c )
 		return;
 
 	DummyGameMode* mode = dynamic_cast<DummyGameMode*>(fight->getGameMode());
-	m_teamPlayer = &mode->getPlayerTeam();
-	m_teamEnemy = &mode->getEnemyTeam();
+	m_teamHero = &mode->getHeroTeam();
+	m_teamMonster = &mode->getMonsterTeam();
 
 	Armature* arm = c->getArmature();
 	if( arm )
@@ -203,7 +172,7 @@ void StateHeroIdle::enter( Character* c )
 void StateHeroIdle::exec( Character* c, float dt )
 {
 	Hero* hero = dynamic_cast<Hero*>(c);
-	if( hero && (hero->getTarget()||hero->findDefaultTarget( m_teamEnemy )) )
+	if( hero && (hero->getTarget()||hero->findDefaultTarget( m_teamMonster->retrieveTeamArray(), NUM_TEAM_MEMBER )) )
 		hero->getStateMachine()->changeState( hero->STATE_MOVE );
 }
 

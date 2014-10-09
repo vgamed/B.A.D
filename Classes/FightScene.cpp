@@ -151,15 +151,15 @@ void FightScene::menuPauseCallback(Ref* pSender)
 Character* FightScene::selectNodeByPosition( Point& pos, bool isForPlayer )
 {
 	auto gamemode = dynamic_cast<DummyGameMode*>( m_pGameMode );
-	Team& team = isForPlayer ? gamemode->getPlayerTeam() : gamemode->getEnemyTeam();
+	Team& team = isForPlayer ? gamemode->getHeroTeam() : gamemode->getMonsterTeam();
 
 	for( int i=0; i<NUM_TEAM_MEMBER; i++ )
 	{
-		Character* c = team.tm.ma[i];
+		Character* c = team.retrieveTeamArray()[i];
 		if( c == nullptr )
 			continue;
 		
-		Armature* arm = team.tm.ma[i]->getArmature();
+		Armature* arm = team.retrieveTeamArray()[i]->getArmature();
 		if( arm == nullptr )
 			continue;
 		

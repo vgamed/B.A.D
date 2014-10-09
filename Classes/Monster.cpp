@@ -2,6 +2,7 @@
 #include "cocostudio/CocoStudio.h"
 #include "cocos-ext.h"
 
+#include "AppDelegate.h"
 #include "StateMachine.h"
 #include "Character.h"
 #include "Team.h"
@@ -36,10 +37,14 @@ void Monster::init( const CharInfo& info, const CharState& basicState,
 
 	STATE_GLOBAL	= new StateMonsterGlobal();
 	STATE_IDLE		= new StateMonsterIdle();
+	STATE_MOVE		= new StateMonsterMove();
+	STATE_ATTACK	= new StateMonsterAttack();
 	STATE_DEAD		= new StateMonsterDead();
 
 	m_vecStates.push_back( STATE_GLOBAL );
 	m_vecStates.push_back( STATE_IDLE );
+	m_vecStates.push_back( STATE_MOVE );
+	m_vecStates.push_back( STATE_ATTACK );
 	m_vecStates.push_back( STATE_DEAD );
 }
 
@@ -164,13 +169,26 @@ void StateMonsterGlobal::exit( Character* c )
 // Monster Idle State
 void StateMonsterIdle::enter( Character* c )
 {
-	cocostudio::Armature* arm = c->getArmature();
+	auto scene = ((AppDelegate *)Application::getInstance())->getSceneFight();
+	FightScene* fight = dynamic_cast<FightScene*>(scene->getChildByName("Fight"));
+	if( !fight ) 
+		return;
+
+	DummyGameMode* mode = dynamic_cast<DummyGameMode*>(fight->getGameMode());
+	m_teamHero = &mode->getHeroTeam();
+	m_teamMonster = &mode->getMonsterTeam();
+
+	Armature* arm = c->getArmature();
 	if( arm )
 		arm->getAnimation()->play( "loading" );
 }
 
 void StateMonsterIdle::exec( Character* c, float dt ) 
 {
+	auto monster = dynamic_cast<Monster*>(c);
+	if( monster && (monster->getTarget()||
+		monster->findDefaultTarget(m_teamMonster->retrieveTeamArray(), NUM_TEAM_MEMBER)) )
+		monster->getStateMachine()->changeState( monster->STATE_MOVE );
 }
 
 void StateMonsterIdle::exit( Character* c ) 
@@ -179,9 +197,31 @@ void StateMonsterIdle::exit( Character* c )
 ////
 
 // Monster Move State
+void StateMonsterMove::enter( Character* c )
+{
+}
+
+void StateMonsterMove::exec( Character* c, float dt )
+{
+}
+
+void StateMonsterMove::exit( Character* c )
+{
+}
 ////
 
 // Monster Attack State
+void StateMonsterAttack::enter( Character* c )
+{
+}
+
+void StateMonsterAttack::exec( Character* c, float dt )
+{
+}
+
+void StateMonsterAttack::exit( Character* c )
+{
+}
 ////
 
 // Monster Damage State

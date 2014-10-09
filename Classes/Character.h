@@ -103,6 +103,7 @@ public:
 	bool isDead() { return (m_actualState.health <= 0); }
 	void reset( void );
 
+	virtual bool findDefaultTarget( Character** enemies, int number );
 	virtual cocos2d::Vec2 calcMoveTo( void );
 
 protected:
